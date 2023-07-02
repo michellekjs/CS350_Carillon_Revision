@@ -1,0 +1,123 @@
+.title {
+  margin: 20px;
+  color: #2f6eba;
+  font-size: 20px;
+  font-weight: 900;
+  text-decoration: none;
+  text-align: center;
+  line-height: 30px;
+  width: 240px;
+}
+
+.accordionChild {
+  text-decoration: none;
+  color: white;
+  margin-bottom: 10px;
+}
+
+.accordionChild:active {
+  width: 100px;
+  height: 40px;
+  background-color: white;
+  color: #2f6eba;
+}
+
+.sidenav {
+  margin: 20px;
+  width: 240px;
+  background-color: #2f6eba;
+  border-radius: 16px;
+  overflow-x: hidden;
+  padding-top: 20px;
+  height: 90vh;
+}
+
+/* Style the sidenav links and the dropdown button */
+.sidenav a,
+.dropdown-btn {
+  padding: 6px 8px 6px 16px;
+  text-decoration: none;
+  font-size: 20px;
+  color: white;
+  display: block;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  outline: none;
+}
+
+.sidenav a,
+.dropdown-btn2 {
+  padding: 6px 8px 6px 16px;
+  text-decoration: none;
+  font-size: 20px;
+  color: white;
+  display: block;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  outline: none;
+}
+
+.sidenav a,
+.dropdown-btn3 {
+  padding: 6px 8px 6px 16px;
+  text-decoration: none;
+  font-size: 20px;
+  color: white;
+  display: block;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  outline: none;
+}
+
+/* Main content */
+.main {
+  margin-left: 200px;
+  /* Same as the width of the sidenav */
+  font-size: 20px;
+  /* Increased text to enable scrolling */
+  padding: 0px 10px;
+}
+
+/* Add an active class to the active dropdown button */
+.active {
+  background-color: green;
+  color: white;
+}
+
+/* Dropdown container (hidden by default). Optional: add a lighter background color and some left padding to change the design of the dropdown content */
+.dropdown-container {
+  display: none;
+  padding-left: 8px;
+}
+
+.dropdown-container2 {
+  display: none;
+  padding-left: 8px;
+}
+
+.dropdown-container3 {
+  display: none;
+  padding-left: 8px;
+}
+
+.content:hover {
+  background-color: white;
+  width: 80%;
+  border-radius: 5px;
+  color: #2f6eba;
+}
+
+/* Optional: Style the caret down icon */
+.fa-caret-down {
+  float: right;
+  padding-right: 8px;
+}
