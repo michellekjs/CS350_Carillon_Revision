@@ -18,12 +18,9 @@ import { IUser, IWorkspace, IChannel } from '@/utils/types'
 export default function SideBar({ children }: { children: React.ReactNode }) {
   const router = useRouter()
   const [expanded, setExpanded] = React.useState<string | false>(false)
-  // const [user, setUser] = useState(null)
-
-  // const [currentworkspace, setWorkspace] = useState(null)
-  const [includedWorkspace, setIncludedWorkspace] = useState<any>(null)
+  const [includedWorkspace, setIncludedWorkspace] = useState<IWorkspace[]>([])
   // 해당 유저가 속한 워크스페이스의 목록
-  const [userChannel, setUserChannel] = useState<any>(null)
+  const [userChannel, setUserChannel] = useState<IChannel[]>([])
 
   const styles = {
     accordion: {
@@ -62,28 +59,34 @@ export default function SideBar({ children }: { children: React.ReactNode }) {
       const userList = await axios.get(`${localPort}/users/`)
       const workspaceList = await axios.get(`${localPort}/workspaces/`)
       const channelList = await axios.get(`${localPort}/channels/`)
-      const filteredList = userList.data.filter(
+
+      //Get Current User -> filteredList[0] is the current user in IUSER form
+      const filteredList: IUser[] = userList.data.filter(
         (u: any) => localStorage.getItem('_id') === u._id,
       )
-      const filteredWorkspace = workspaceList.data.filter((a: any) =>
-        filteredList[0].participatingWorkspaces.includes(a._id),
+      //Get workspace list that the user is included in using IWorkspace form
+      const filteredWorkspace: IWorkspace[] = workspaceList.data.filter(
+        (a: any) => filteredList[0].participatingWorkspaces.includes(a._id),
       )
-      // console.log(filteredWorkspace)
 
-      const filteredChannel = channelList.data.filter((c: any) =>
+      //Get all channels the user is included in
+      const filteredChannel: IChannel[] = channelList.data.filter((c: any) =>
         filteredList[0].participatingChannels.includes(c._id),
       )
-      const finalfilteredChannel = filteredChannel.filter(
+      //Get the channel included in the current workspace
+      const finalfilteredChannel: IChannel[] = filteredChannel.filter(
         (c: any) => c.workspace.name === router.query.classCode,
       )
+
       setIncludedWorkspace(filteredWorkspace)
+
       if (router.query.classCode == null) {
         setUserChannel(filteredChannel)
       } else {
         setUserChannel(finalfilteredChannel)
       }
     } catch (err) {
-      setUserChannel(null)
+      setUserChannel([])
     }
   }
 
