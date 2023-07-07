@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import Image from 'next/image'
-import axios from 'axios'
 import { localPort } from '@/utils/constants'
 import Accordion from '@mui/material/Accordion'
 import AccordionSummary from '@mui/material/AccordionSummary'
@@ -15,7 +14,19 @@ import style from './SideBar.module.css'
 import Notifier from './Notifier'
 import { IUser, IWorkspace, IChannel } from '@/utils/types'
 
-export default function SideBar({ children }: { children: React.ReactNode }) {
+interface WorkspacesProps {
+  users: IUser[]
+  workspaces: IWorkspace[]
+  channels: IChannel[]
+}
+type child = {
+  children: React.ReactNode
+}
+
+export default function SideBar(
+  { children }: child,
+  { users, workspaces, channels }: WorkspacesProps,
+) {
   const router = useRouter()
   const [expanded, setExpanded] = React.useState<string | false>(false)
   const [includedWorkspace, setIncludedWorkspace] = useState<IWorkspace[]>([])
@@ -55,38 +66,30 @@ export default function SideBar({ children }: { children: React.ReactNode }) {
   // get list of workspaces that the user belongs to\
 
   async function getUser() {
-    try {
-      const userList = await axios.get(`${localPort}/users/`)
-      const workspaceList = await axios.get(`${localPort}/workspaces/`)
-      const channelList = await axios.get(`${localPort}/channels/`)
+    //Get Current User -> filteredList[0] is the current user in IUSER form
+    const filteredList: IUser[] = users.filter(
+      (u: any) => localStorage.getItem('_id') === u._id,
+    )
+    //Get workspace list that the user is included in using IWorkspace form
+    const filteredWorkspace: IWorkspace[] = workspaces.filter((a: any) =>
+      filteredList[0].participatingWorkspaces.includes(a._id),
+    )
 
-      //Get Current User -> filteredList[0] is the current user in IUSER form
-      const filteredList: IUser[] = userList.data.filter(
-        (u: any) => localStorage.getItem('_id') === u._id,
-      )
-      //Get workspace list that the user is included in using IWorkspace form
-      const filteredWorkspace: IWorkspace[] = workspaceList.data.filter(
-        (a: any) => filteredList[0].participatingWorkspaces.includes(a._id),
-      )
+    //Get all channels the user is included in
+    const filteredChannel: IChannel[] = channels.filter((c: any) =>
+      filteredList[0].participatingChannels.includes(c._id),
+    )
+    //Get the channel included in the current workspace
+    const finalfilteredChannel: IChannel[] = filteredChannel.filter(
+      (c: any) => c.workspace.name === router.query.classCode,
+    )
 
-      //Get all channels the user is included in
-      const filteredChannel: IChannel[] = channelList.data.filter((c: any) =>
-        filteredList[0].participatingChannels.includes(c._id),
-      )
-      //Get the channel included in the current workspace
-      const finalfilteredChannel: IChannel[] = filteredChannel.filter(
-        (c: any) => c.workspace.name === router.query.classCode,
-      )
+    setIncludedWorkspace(filteredWorkspace)
 
-      setIncludedWorkspace(filteredWorkspace)
-
-      if (router.query.classCode == null) {
-        setUserChannel(filteredChannel)
-      } else {
-        setUserChannel(finalfilteredChannel)
-      }
-    } catch (err) {
-      setUserChannel([])
+    if (router.query.classCode == null) {
+      setUserChannel(filteredChannel)
+    } else {
+      setUserChannel(finalfilteredChannel)
     }
   }
 
@@ -297,4 +300,25 @@ export default function SideBar({ children }: { children: React.ReactNode }) {
       </div>
     </div>
   )
+}
+
+export async function getServerSideProps() {
+  const options = {
+    method: 'GET',
+    headers: {
+      Accept: 'application/json',
+    },
+  }
+  const userList = await fetch(`${localPort}/users/`, options)
+  const users = await userList.json()
+
+  const workspaceList = await fetch(`${localPort}/workspaces/`, options)
+  const workspaces = await workspaceList.json()
+
+  const channelList = await fetch(`${localPort}/channels/`, options)
+  const channels = await channelList.json()
+
+  return {
+    props: { users, workspaces, channels },
+  }
 }
