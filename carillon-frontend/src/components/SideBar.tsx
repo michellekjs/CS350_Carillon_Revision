@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import Image from 'next/image'
 import { localPort } from '@/utils/constants'
+import { IUser, IWorkspace, IChannel } from '@/utils/types'
 import Accordion from '@mui/material/Accordion'
 import AccordionSummary from '@mui/material/AccordionSummary'
 import AccordionDetails from '@mui/material/AccordionDetails'
@@ -12,19 +13,18 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import useWindowDimensions from './WindowSize'
 import style from './SideBar.module.css'
 import Notifier from './Notifier'
-import { IUser, IWorkspace, IChannel } from '@/utils/types'
 
 interface WorkspacesProps {
   users: IUser[]
   workspaces: IWorkspace[]
   channels: IChannel[]
 }
-type child = {
+type Child = {
   children: React.ReactNode
 }
 
 export default function SideBar(
-  { children }: child,
+  { children }: Child,
   { users, workspaces, channels }: WorkspacesProps,
 ) {
   const router = useRouter()
@@ -66,20 +66,20 @@ export default function SideBar(
   // get list of workspaces that the user belongs to\
 
   async function getUser() {
-    //Get Current User -> filteredList[0] is the current user in IUSER form
+    // Get Current User -> filteredList[0] is the current user in IUSER form
     const filteredList: IUser[] = users.filter(
       (u: any) => localStorage.getItem('_id') === u._id,
     )
-    //Get workspace list that the user is included in using IWorkspace form
+    // Get workspace list that the user is included in using IWorkspace form
     const filteredWorkspace: IWorkspace[] = workspaces.filter((a: any) =>
       filteredList[0].participatingWorkspaces.includes(a._id),
     )
 
-    //Get all channels the user is included in
+    // Get all channels the user is included in
     const filteredChannel: IChannel[] = channels.filter((c: any) =>
       filteredList[0].participatingChannels.includes(c._id),
     )
-    //Get the channel included in the current workspace
+    // Get the channel included in the current workspace
     const finalfilteredChannel: IChannel[] = filteredChannel.filter(
       (c: any) => c.workspace.name === router.query.classCode,
     )
